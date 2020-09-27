@@ -5,14 +5,11 @@ const moment= require('moment');
 const { resolve } = require('path');
  
 const {OAuth2} = google.auth
+require('dotenv').config();
 
-const oAuth2Client = new OAuth2('91612401001-rklsgfomdm29bt3v3issn5o8te5qv598.apps.googleusercontent.com'
-, 'AWgqeMGiEL47RO7ZfGrOi9nG'
-)
+const oAuth2Client = new OAuth2(process.env.USER_CREDENTIAL, process.env.USER_SECRET)
 
-oAuth2Client.setCredentials({refresh_token: 
-  '1//04DhmtGhlNj2KCgYIARAAGAQSNwF-L9IrCDiqRnuF1avVgXxh7IkvyUdnGOKBTg31WCbM62EurYd0h0dIMFOOuEl5l1wJCsZSNnE',
-})
+oAuth2Client.setCredentials({refresh_token: process.env.USER_REFRESH_TOKEN,})
 
 const calendar = google.calendar({version: 'v3', auth: oAuth2Client})
 
