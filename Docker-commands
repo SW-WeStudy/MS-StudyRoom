@@ -1,0 +1,2 @@
+docker build -t nameapp .
+docker run --publish 3000:3000 nameapp

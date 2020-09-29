@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const calendarcalls = require('../calendarcalls');
 const StudyRooms = require('../models/studyrooms');
-
+const cors = require('./cors');
 const studyroomRouter = express.Router();
 
 studyroomRouter.use(bodyParser.json());
@@ -11,7 +11,8 @@ studyroomRouter.use(bodyParser.json());
 //  ------------------------- /studyrooms/  ------------------------------ //
 
 studyroomRouter.route('/')
-.get((req,res,next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, (req,res,next) => {
     StudyRooms.find({})
     .then((studyrooms) => {
         res.statusCode = 200;
@@ -21,7 +22,7 @@ studyroomRouter.route('/')
     .catch((err) => next(err));
 })
 
-.post((req,res,next) => {
+.post(cors.corsWithOptions, (req,res,next) => {
     calendarcalls.insertRoom_in_calendar(req.body)
     .then((response) => {
         req.body.url = response.data.hangoutLink
@@ -40,7 +41,7 @@ studyroomRouter.route('/')
 
 // Only admin
 
-.delete((req, res, next) => {
+.delete(cors.corsWithOptions, (req, res, next) => {
     StudyRooms.remove({})
     .then((resp) => {
         res.statusCode = 200;
@@ -53,7 +54,8 @@ studyroomRouter.route('/')
 //  ------------------------- /studyrooms/{studyroomId} endpoint ------------------------------ //
 
 studyroomRouter.route('/:studyroomId')
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         res.statusCode = 200;
@@ -63,7 +65,7 @@ studyroomRouter.route('/:studyroomId')
     .catch((err) => next(err));
 })
 
-.put((req, res, next) => {
+.put(cors.corsWithOptions, (req, res, next) => {
     StudyRooms.findByIdAndUpdate(req.params.studyroomId, {$set: req.body}, {new: true})
     .then((studyroom) => {
         req.body.calendarEventId = studyroom.calendarEventId
@@ -80,7 +82,7 @@ studyroomRouter.route('/:studyroomId')
 
 // Only StudyRoom Owner
 
-.delete((req, res, next) => {
+.delete(cors.corsWithOptions, (req, res, next) => {
     StudyRooms.findByIdAndDelete(req.params.studyroomId)
     .then((studyroom) => {
         res.statusCode = 200;
@@ -94,7 +96,8 @@ studyroomRouter.route('/:studyroomId')
 //  ------------------------- /studyrooms/{studyroomId}/resources endpoint ------------------------------ //
 
 studyroomRouter.route('/:studyroomId/resources')
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         if(studyroom != null){
@@ -109,7 +112,7 @@ studyroomRouter.route('/:studyroomId/resources')
     })
 })
 
-.post((req, res, next) => {
+.post(cors.corsWithOptions, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         if(studyroom != null){
@@ -136,7 +139,7 @@ studyroomRouter.route('/:studyroomId/resources')
 
 // Only StudyRoom Owner
 
-.delete((req, res, next) => {
+.delete(cors.corsWithOptions, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         if(studyroom != null){
@@ -161,7 +164,8 @@ studyroomRouter.route('/:studyroomId/resources')
 //  ------------------ /studyrooms/{studyroomId}/resources/{resourceId} endpoint ------------------------ //
 
 studyroomRouter.route('/:studyroomId/resources/:resourceId')
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         if(studyroom != null && studyroom.resources.id(req.params.resourceId) != null){
@@ -180,7 +184,7 @@ studyroomRouter.route('/:studyroomId/resources/:resourceId')
     },(err) => next(err))
     .catch((err) => next(err));
 })
-.put((req, res, next) => {
+.put(cors.corsWithOptions, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         if(studyroom != null && studyroom.resources.id(req.params.resourceId) != null){
@@ -213,7 +217,7 @@ studyroomRouter.route('/:studyroomId/resources/:resourceId')
 })
 
 // Only the resource owner
-.delete((req, res, next) => {
+.delete(cors.corsWithOptions, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         if(studyroom != null && studyroom.resources.id(req.params.resourceId) != null){
@@ -242,7 +246,8 @@ studyroomRouter.route('/:studyroomId/resources/:resourceId')
 //  ------------------ /studyrooms/{studyroomId}/students endpoint ------------------------ //
 
 studyroomRouter.route('/:studyroomId/students')
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         if(studyroom != null){
@@ -257,7 +262,7 @@ studyroomRouter.route('/:studyroomId/students')
     })
 })
 
-.post((req, res, next) => {
+.post(cors.corsWithOptions, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         if(studyroom != null){
@@ -284,7 +289,7 @@ studyroomRouter.route('/:studyroomId/students')
     .catch((err) => next(err));
 })
 
-.delete((req, res, next) => {
+.delete(cors.corsWithOptions, (req, res, next) => {
     StudyRooms.findById(req.params.studyroomId)
     .then((studyroom) => {
         if(studyroom != null && studyroom.students.id(req.body._id) != null){
