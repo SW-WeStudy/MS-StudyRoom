@@ -39,7 +39,10 @@ const resourceSchema = new Schema({
     timestamps: true
 })
 const studyroomSchema = new Schema({
-    
+    courseId: {
+        type: String,
+        require: true
+    },
     name: {
         type: String,
         require: true,

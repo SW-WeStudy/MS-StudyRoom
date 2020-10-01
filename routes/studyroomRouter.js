@@ -3,9 +3,9 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const calendarcalls = require('../calendarcalls');
 const StudyRooms = require('../models/studyrooms');
+const Usercreates = require('../models/usercreates');
 const cors = require('./cors');
 const studyroomRouter = express.Router();
-
 studyroomRouter.use(bodyParser.json());
 
 //  ------------------------- /studyrooms/  ------------------------------ //
@@ -29,12 +29,32 @@ studyroomRouter.route('/')
         req.body.calendarEventId = response.data.id
         StudyRooms.create(req.body)
         .then((studyroom) => {
-            console.log('room Created');
-            res.statusCode = 200;
-            res.setHeader('Content-Type','application/json');
-            res.json(studyroom);
+            /* Add the id into schema that saves the user Srooms creates */
+            Usercreates.findOne({ user: studyroom.ownerEmail})
+            .then((usercreates) => {
+                if(usercreates === null){
+                    Usercreates.create({ user: studyroom.ownerEmail,studyrooms: studyroom._id})
+                    .then(() => {
+                        console.log('room Created');
+                        res.statusCode = 200;
+                        res.setHeader('Content-Type','application/json');
+                        res.json(studyroom);
+                        
+                    },(err) => next(err))
+                    .catch((err) => next(err));
+                }else{
+                    usercreates.studyrooms.push(studyroom._id);
+                    usercreates.save()
+                    .then(() => {
+                        console.log('room Created');
+                        res.statusCode = 200;
+                        res.setHeader('Content-Type','application/json');
+                        res.json(studyroom);
+                    },(err) => next(err));  
+                }
+            },(err) => next(err))
+            /* END Add the id into schema that saves the user Srooms creates */
         },(err) => next(err))
-        .catch((err) => next(err));
     }, (err) => next(err))
     .catch((err) => next(err));
 })
