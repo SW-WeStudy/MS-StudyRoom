@@ -84,6 +84,26 @@ exports.updateRoom_in_calendar = function(req){
       })
   })
 }
+exports.deleteRoom_in_calendar = function(eventId){
+  return new Promise( (resolve, next) => {
+    return calendar.events.delete(
+      { 
+        calendarId: 'primary', 
+        sendUpdates: "all",
+        eventId: eventId,
+      }, 
+      (err, event) => {
+        if(err) {
+          err = new Error('Error deleting ' + eventId + ' Calendar event' );
+          err.status = 404;
+          return next(err);
+        }
+  
+        console.log('log Calendar deleted');
+        resolve('Calendar deleted')
+      })
+  })
+}
 exports.insertRoom_in_calendar = function(req){
   return new Promise( (resolve) => {
     var eventEndTime = moment(req.date).add(req.duration, 'm').toDate();
@@ -110,34 +130,22 @@ exports.insertRoom_in_calendar = function(req){
       },
       attendees: [ { email: req.ownerEmail} ],
     }
-    calendar.freebusy.query({
-      resource: {
-        timeMin: req.date,
-        timeMax: eventEndTime,
-        timeZone: 'America/Bogota',
-        items: [{id: 'primary'}],
-      }
-    }, (err, res) => {
-      if(err) return console.error('Free Busy Query Error: ', err);
       
-      const eventsArray = res.data.calendars.primary.busy
     
-      if(eventsArray.length === 0) {
-        return calendar.events.insert(
-        { 
-          calendarId: 'primary', 
-          resource: event,
-          conferenceDataVersion: 1,
-          sendUpdates: "all"
-        }, 
-        (err, event) => {
-          if(err) return console.error('Calendar Event Creation Error: ', err)
-    
-          console.log('Event created: %s', event.data.hangoutLink);
-          resolve(event)
-        })
-      }else{return err = new Error('Calendar date ', req.date, ' ocupped'); }
+    return calendar.events.insert(
+    { 
+      calendarId: 'primary', 
+      resource: event,
+      conferenceDataVersion: 1,
+      sendUpdates: "all"
+    }, 
+    (err, event) => {
+      if(err) return console.error('Calendar Event Creation Error: ', err)
+
+      console.log('Event created: %s', event.data.hangoutLink);
+      resolve(event)
     })
+      
   })
 }
     

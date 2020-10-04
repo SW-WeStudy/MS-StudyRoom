@@ -105,9 +105,13 @@ studyroomRouter.route('/:studyroomId')
 .delete(cors.cors, (req, res, next) => {
     StudyRooms.findByIdAndDelete(req.params.studyroomId)
     .then((studyroom) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type','application/json');
-        res.json(studyroom);
+        calendarcalls.deleteRoom_in_calendar(studyroom.calendarEventId)
+        .then(() => {
+            res.statusCode = 200;
+            res.setHeader('Content-Type','application/json');
+            res.json(studyroom);
+        }, (err) => next(err))
+        .catch((err) => next(err));
     },(err) => next(err))
     .catch((err) => next(err));
 })
