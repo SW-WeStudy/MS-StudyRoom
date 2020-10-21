@@ -13,7 +13,7 @@ studyroomRouter.use(bodyParser.json());
 studyroomRouter.route('/')
 .options(cors.cors, (req, res) => { res.sendStatus(200); })
 .get(cors.cors, (req,res,next) => {
-    StudyRooms.find({})
+    StudyRooms.find({courseId: req.body.courseId})
     .then((studyrooms) => {
         res.statusCode = 200;
         res.setHeader('Content-Type','application/json');

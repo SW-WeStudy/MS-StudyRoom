@@ -31,4 +31,5 @@ usercreatesRouter.route('/')
 
 module.exports = usercreatesRouter;
 
-//5f70d9a25c4b871f1c8db6ff
+//Si borro usercreates, debo borrar las salas de estudio
+// Si borro sala de estudio, debo borrar la id en usercreates
